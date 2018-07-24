@@ -3,12 +3,6 @@ from bs4 import BeautifulSoup, SoupStrainer
 from datetime import datetime as dt
 
 # all_tags = SoupStrainer(id=['menu', 'Printable', 'after_section_1', 'page-42', 'textwidget'])
-amica_tags = SoupStrainer(id='menu')
-por_tags = SoupStrainer(id='Printable')
-theron_tags = SoupStrainer(id='after_section_1')
-factory_tags = SoupStrainer(id='lounaslista') # Fix
-blancco_tags = SoupStrainer(id='page-42')     # Fix
-smarteat_tags = SoupStrainer(id='textwidget') # Fix
 
 
 
@@ -38,16 +32,22 @@ def weekday_str():
 
 
 def parse(html_txt, weekday, restaurant):
+    amica_tags = SoupStrainer(id='menu')
     tag = amica_tags        # Default to lounaat.info
     if (restaurant == 'POR'):
+        por_tags = SoupStrainer(id='Printable')
         tag = por_tags
     elif (restaurant == 'Theron'):
+        theron_tags = SoupStrainer(id='after_section_1')
         tag = theron_tags
     elif (restaurant == 'Factory'):
+        factory_tags = SoupStrainer(id='main') # Fix
         tag = factory_tags
     elif (restaurant == 'Blancco'):
+        blancco_tags = SoupStrainer(id='page-42')     # Fix
         tag = blancco_tags
     elif (restaurant == 'Smarteat'):
+        smarteat_tags = SoupStrainer(id='textwidget') # Fix
         tag = smarteat_tags
     soup = BeautifulSoup(html_txt, 'html.parser', parse_only=tag)
     return soup.prettify()
