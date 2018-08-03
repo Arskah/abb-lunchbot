@@ -1,23 +1,20 @@
 import requests
-import re
+import os
 from bs4 import BeautifulSoup, SoupStrainer
 from datetime import datetime as dt
+from slackclient import SlackClient
 
-# all_tags = SoupStrainer(id=['menu', 'Printable', 'after_section_1', 'page-42', 'textwidget'])
-
-
-
+slack_token = os.environ["SLACK_API_TOKEN"]
+sc = SlackClient(slack_token)
 urls = {
     'Amica Tellus': "http://www.lounaat.info/lounas/amica-tellus/helsinki",
     # 'POR': "http://www.por.fi/Menu-Pitajanmaki",
     # # 'Theron': "http://eatwork.fi/tilat/valimotie-27/",
-    # 'Theron': "https://www.lounaat.info/lounas/theron-catering-pitjnmki/helsinki",
+    'Theron': "https://www.lounaat.info/lounas/theron-catering-pitjnmki/helsinki",
     # 'Factory': "http://www.ravintolafactory.com/lounasravintolat/ravintolat/helsinki-pitajanmaki/",
-    # # 'Blancco': "http://www.ravintolablancco.com/lounas-ravintolat/pitajanmaki/",
-    # 'Blancco': "https://www.lounaat.info/lounas/blancco-pitajanmaki/helsinki",
-    # # 'Smarteat': "http://www.smarteat.fi/menu-pitskun-kanttiini/",
-    # 'Smarteat': "https://www.lounaat.info/lounas/smarteat-pitsku/helsinki",
-    # 'Amica Lasihelmi': "http://www.lounaat.info/lounas/amica-lasihelmi/helsinki",
+    'Blancco': "https://www.lounaat.info/lounas/blancco-pitajanmaki/helsinki",
+    'Smarteat': "https://www.lounaat.info/lounas/smarteat-pitsku/helsinki",
+    'Amica Lasihelmi': "http://www.lounaat.info/lounas/amica-lasihelmi/helsinki",
 }
 
 WEEKDAYS = [
@@ -45,7 +42,7 @@ def parse(html_txt, weekday, restaurant):
     #     theron_tags = SoupStrainer(id='after_section_1')
     #     tag = theron_tags
     elif (restaurant == 'Factory'):
-        factory_tags = SoupStrainer(id='main') # Fix
+        factory_tags = SoupStrainer(id='main')          # Fix
         tag = factory_tags
     # elif (restaurant == 'Blancco'):
     #     blancco_tags = SoupStrainer(id='page-42')     # Fix
@@ -53,23 +50,14 @@ def parse(html_txt, weekday, restaurant):
     # elif (restaurant == 'Smarteat'):
     #     smarteat_tags = SoupStrainer(id='textwidget') # Fix
     #     tag = smarteat_tags
-    soup = BeautifulSoup(html_txt, 'html.parser', parse_only=tag)
-
-
-    if (restaurant == 'POR'):
-        pass
-    # elif (restaurant == 'Theron'):
-
-    elif (restaurant == 'Factory'):
-        pass
-    # elif (restaurant == 'Blancco'):
- 
-    # elif (restaurant == 'Smarteat'):
-
-    else:
-        # items = soup.find_all("h3")
-        return soup.find(lambda tag: tag.name == "h3" and tag.text.lower().startswith(weekday)).parent.parent.prettify()
-    return soup.prettify()
+    else:       # lounaat.info parse
+        soup = BeautifulSoup(html_txt, 'html.parser', parse_only=tag)
+        raw_html = soup.find(lambda tag: tag.name == "h3" and tag.text.lower().startswith(weekday)).parent.parent
+        lst = []
+        for elem in raw_html.find_all("p"):
+            lst.append(" ".join(elem.text.split()))
+        return '\n'.join(lst)
+    return ""       # Default failed parse
 
 
 def main():
@@ -79,10 +67,12 @@ def main():
         resp = requests.get(url)
         print("{0}: {1}".format(name, resp.status_code))
         text = parse(resp.text, wd, name)
-        # print(text)
-        with open("test.html", 'a', encoding='utf-8') as f:
-            f.write(text)
-            # pass
+        # with open("test.html", 'a', encoding='utf-8') as f:
+        sc.api_call(
+            "chat.postMessage",
+            channel="CAXPL9EUR",
+            text=name + ":\n" + text,
+        )
 
 
 main()
