@@ -63,15 +63,16 @@ def parse(html_txt, weekday, restaurant):
 def main():
     wd = weekday_str()
     # print(wd)
-    for (name, url) in urls.items():
+    for (restaurant, url) in urls.items():
         resp = requests.get(url)
-        print("{0}: {1}".format(name, resp.status_code))
-        text = parse(resp.text, wd, name)
+        print("{0}: {1}".format(restaurant, resp.status_code))
+        text = parse(resp.text, wd, restaurant)
         # with open("test.html", 'a', encoding='utf-8') as f:
+        bolded_header = "*{0}:*\n".format(restaurant)
         sc.api_call(
             "chat.postMessage",
             channel="CAXPL9EUR",
-            text=name + ":\n" + text,
+            text=bolded_header +  + text,
         )
 
 
