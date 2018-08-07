@@ -72,7 +72,7 @@ def main():
         sc.api_call(
             "chat.postMessage",
             channel="CAXPL9EUR",
-            text=bolded_header +  + text,
+            text=bolded_header + text,
         )
 
 
