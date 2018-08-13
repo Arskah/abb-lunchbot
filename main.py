@@ -11,7 +11,7 @@ urls = {
     'Amica Tellus': "https://www.lounaat.info/lounas/amica-tellus/helsinki",
     # 'POR': "http://www.por.fi/Menu-Pitajanmaki",
     'Theron': "https://www.lounaat.info/lounas/theron-catering-pitjnmki/helsinki",
-    # 'Factory': "http://www.ravintolafactory.com/lounasravintolat/ravintolat/helsinki-pitajanmaki/",
+    'Factory': "http://www.ravintolafactory.com/lounasravintolat/ravintolat/helsinki-pitajanmaki/",
     'Blancco': "https://www.lounaat.info/lounas/blancco-pitajanmaki/helsinki",
     'Smarteat': "https://www.lounaat.info/lounas/smarteat-pitsku/helsinki",
     'Amica Lasihelmi': "https://www.lounaat.info/lounas/amica-lasihelmi/helsinki",
