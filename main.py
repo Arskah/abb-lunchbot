@@ -55,7 +55,10 @@ def parse(html_txt, weekday, restaurant):
             raw_html = soup.find(lambda tag: tag.name == "h3" and tag.text.lower().startswith(weekday)).parent.parent
             lst = []
             for elem in raw_html.find_all("p"):
-                lst.append(" ".join(elem.text.split()))
+                if not elem.text.startswith("Mixed lunch:")\
+                   and not elem.text.startswith("Kaikki lounaspakettimme sisältävät")\
+                   and not elem.text.startswith("All of our lunch options"):
+                        lst.append(" ".join(elem.text.split()))
             return '\n'.join(lst)
     except Exception:
         return ""       # Default failed parse
