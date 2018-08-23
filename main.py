@@ -1,13 +1,13 @@
 import requests
+import json
 import os
 from bs4 import BeautifulSoup, SoupStrainer
 from datetime import datetime as dt
 from datetime import timedelta
-from slackclient import SlackClient
 
-slack_token = os.environ["SLACK_API_TOKEN"]
-sc = SlackClient(slack_token)
-urls = {
+SLACK_URL = os.environ["SLACK_URL"]
+HEADERS = {'content-type': 'application/json'}
+URLS = {
     'Amica Tellus': "https://www.lounaat.info/lounas/amica-tellus/helsinki",
     # 'POR': "http://www.por.fi/Menu-Pitajanmaki",
     'Theron': "https://www.lounaat.info/lounas/theron-catering-pitjnmki/helsinki",
@@ -67,18 +67,12 @@ def parse(html_txt, weekday, restaurant):
 def main():
     wd = weekday_str()
     # print(wd)
-    for (restaurant, url) in urls.items():
+    for (restaurant, url) in URLS.items():
         resp = requests.get(url)
         print("{0}: {1}".format(restaurant, resp.status_code))
         text = parse(resp.text, wd, restaurant)
-        # with open("test.html", 'a', encoding='utf-8') as f:
-        #     f.write(text)
         bolded_header = "*{0}:*\n".format(restaurant)
-        sc.api_call(
-            "chat.postMessage",
-            channel="CAXPL9EUR",
-            text=bolded_header + text,
-        )
+        requests.post(SLACK_URL, data=json.dumps({'text': bolded_header + text}), headers=HEADERS)
 
 
 main()
