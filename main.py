@@ -65,14 +65,17 @@ def parse(html_txt, weekday, restaurant):
 
 
 def main():
-    wd = weekday_str()
-    # print(wd)
-    for (restaurant, url) in URLS.items():
-        resp = requests.get(url)
-        print("{0}: {1}".format(restaurant, resp.status_code))
-        text = parse(resp.text, wd, restaurant)
-        bolded_header = "*{0}:*\n".format(restaurant)
-        requests.post(SLACK_URL, data=json.dumps({'text': bolded_header + text}), headers=HEADERS)
+    try:
+        wd = weekday_str()
+        # print(wd)
+        for (restaurant, url) in URLS.items():
+            resp = requests.get(url)
+            print("{0}: {1}".format(restaurant, resp.status_code))
+            text = parse(resp.text, wd, restaurant)
+            bolded_header = "*{0}:*\n".format(restaurant)
+            requests.post(SLACK_URL, data=json.dumps({'text': bolded_header + text}), headers=HEADERS)
+    except Exception as ex:
+        request.post(SLACK_URL, data=json.dumps({'text': ex}), headers=HEADERS)
 
 
 main()
