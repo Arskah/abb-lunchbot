@@ -64,16 +64,33 @@ def parse(html_txt, weekday, restaurant):
         return ""       # Default failed parse
 
 
+dt.today().isoformat()
+
 def main():
     try:
         wd = weekday_str()
-        # print(wd)
+        # Post starting message
+        resp = requests.post(SLACK_URL, data=json.dumps(
+            {
+                '*text': f'Ruokalistat {wd} {dt.today().isoformat()}:*'
+            }
+            ), headers=HEADERS
+        )
+        # Get latest thread id
+        ts = json.loads(resp.text)['ts']
+        # Add restaurants in thread under the daily message
         for (restaurant, url) in URLS.items():
             resp = requests.get(url)
             print("{0}: {1}".format(restaurant, resp.status_code))
             text = parse(resp.text, wd, restaurant)
             bolded_header = "*{0}:*\n".format(restaurant)
-            requests.post(SLACK_URL, data=json.dumps({'text': bolded_header + text}), headers=HEADERS)
+            requests.post(SLACK_URL, data=json.dumps(
+                {
+                    'text': bolded_header + text,
+                    'thread_ts': ts
+                }
+                ), headers=HEADERS
+            )
     except Exception as ex:
         requests.post(SLACK_URL, data=json.dumps({'text': ex}), headers=HEADERS)
 
