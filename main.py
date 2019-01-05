@@ -72,7 +72,7 @@ def main():
         # Post starting message
         resp = requests.post(SLACK_URL, data=json.dumps(
             {
-                '*text': f'Ruokalistat {wd} {dt.today().isoformat()}:*'
+                'text': f'*Ruokalistat {wd} {dt.today().isoformat()}:*'
             }
             ), headers=HEADERS
         )
